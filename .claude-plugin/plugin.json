@@ -1,0 +1,29 @@
+{
+  "name": "exo",
+  "version": "0.1.0",
+  "description": "Exo — your personal cognition layer for Claude Code: cross-session memory, identity-conditioned context, and capture.",
+  "author": { "name": "Exo AI" },
+  "homepage": "https://github.com/With-Exo-AI/exo-plugin",
+  "userConfig": {
+    "exo_api_key": {
+      "type": "string",
+      "title": "Exo connection key",
+      "description": "Your Exo connection key (exo_prod_…). Generate it in the Exo dashboard → Settings → Integrations → Connect to Claude Code.",
+      "sensitive": true,
+      "required": true
+    },
+    "backend_url": {
+      "type": "string",
+      "title": "Exo backend URL",
+      "description": "Exo backend base URL.",
+      "default": "https://exo-api.proudplant-cb7660a6.westus2.azurecontainerapps.io"
+    }
+  },
+  "mcpServers": {
+    "exo": {
+      "type": "http",
+      "url": "${user_config.backend_url}/mcp/",
+      "headers": { "Authorization": "Bearer ${user_config.exo_api_key}" }
+    }
+  }
+}

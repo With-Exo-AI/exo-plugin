@@ -1,0 +1,11 @@
+{
+  "name": "exo",
+  "owner": { "name": "Exo AI" },
+  "plugins": [
+    {
+      "name": "exo",
+      "source": "./",
+      "description": "Exo cognition layer for Claude Code — cross-session memory, identity-conditioned context, capture, and named flows."
+    }
+  ]
+}
