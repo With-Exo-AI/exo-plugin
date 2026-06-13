@@ -16,9 +16,11 @@ You'll be prompted for your **Exo connection key** (`exo_prod_…`). Generate on
 the Exo dashboard → **Settings → Integrations → Connect to Claude Code**, then
 restart Claude Code.
 
-> The plugin **supplements** `claude mcp add exo …`; it does not replace it. Use
-> **one** of the two — running both registers two `exo` servers that collide. To
-> switch, remove the other first (`claude mcp remove exo`).
+> The plugin **supplements** `claude mcp add exo …`; it does not replace it. They
+> don't hard-collide — a plugin's MCP server is namespaced (`plugin:exo:exo`), so it
+> coexists with a standalone `exo`. But running both gives you **two copies of every
+> Exo tool** (`mcp__exo__*` and `mcp__plugin_exo_exo__*`), so use **one**. To switch,
+> remove the other first (`claude mcp remove exo`).
 
 ## What you get
 
@@ -48,18 +50,18 @@ Confirmed against the Claude Code plugin reference + real installed plugins
   marketplace). Required top-level keys: `name`, `owner.name`, `plugins[]`.
 - **`backend_url`** default is kept in sync with `paths.py::DEFAULT_BASE_URL`.
 
-## Local verification (before publishing)
+## Local verification
 
-Install from local disk and confirm three surfaces:
+Verified by a local-disk install (2026-06-12, Claude Code v2.1.x):
 
-1. Add the local marketplace + install the plugin, supplying a real test
-   `exo_prod_…` key at the prompt.
-2. Verify: the `exo` MCP registered and its tools appear (`tools/list`);
-   `/exo-research` and `/exo-setup` show in the command list; the `using-exo`
-   skill is listed.
-3. **Duplicate-name check:** with the plugin installed AND a prior
-   `claude mcp add exo …` present, note whether Claude Code errors on the
-   duplicate `exo` server name or silently takes one. Record the result here so
-   the "pick one" guidance matches reality.
-
-> ⚠️ Duplicate-name behavior: _to confirm on first local install (O6)._
+1. `/plugin marketplace add C:\path\to\exo-plugin` then `/plugin install exo@exo`,
+   supplying a real `exo_prod_…` key at the prompt. ✅
+2. The `/exo-research`, `/exo-setup` commands and the `using-exo` skill appear
+   immediately; the `plugin:exo:exo` MCP server registers after a Claude Code
+   reload/restart (MCP servers load at startup, unlike commands/skills). ✅
+3. **Duplicate-name behavior (O6):** plugin MCP servers are namespaced
+   (`plugin:exo:exo`), so the plugin's server **coexists** with a standalone
+   `claude mcp add exo` — Claude Code does **not** error on the shared name and does
+   **not** silently drop one (confirmed: a reload reported both, alongside the same
+   pattern already live for `context7` + `plugin:context7:context7`). The only
+   downside of running both is duplicate tools — hence the "use one" guidance above.
