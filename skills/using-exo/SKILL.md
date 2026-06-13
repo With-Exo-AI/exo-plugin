@@ -69,5 +69,5 @@ deep briefing. `temporal_window` accepts ranges like `"2025-Q4..2026-Q1"`.
   user to the dashboard Import page; it is not a connection failure.
 - **401 / tools missing** → the connection key is invalid/revoked, or the URL
   lacked the trailing slash `/mcp/`. Re-generate the key in the Exo dashboard →
-  Settings → Integrations → Connect to Claude Code and re-connect (use the
+  **Import → Connect Claude Code** and re-connect (use the
   trailing-slash `/mcp/` URL).

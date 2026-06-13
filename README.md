@@ -13,7 +13,7 @@ prompts you for your connection key, so there's no shell command to copy.
 ```
 
 You'll be prompted for your **Exo connection key** (`exo_prod_…`). Generate one in
-the Exo dashboard → **Settings → Integrations → Connect to Claude Code**, then
+the Exo dashboard → **Import → Connect Claude Code**, then
 restart Claude Code.
 
 > The plugin **supplements** `claude mcp add exo …`; it does not replace it. They
