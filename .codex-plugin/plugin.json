@@ -1,0 +1,31 @@
+{
+  "name": "exo",
+  "version": "0.2.0",
+  "description": "Exo for Codex: hosted personal-memory MCP, identity-conditioned recall, capture, and workflow skills.",
+  "author": {
+    "name": "Exo AI",
+    "email": "withexoai@gmail.com",
+    "url": "https://github.com/With-Exo-AI"
+  },
+  "homepage": "https://github.com/With-Exo-AI/exo-plugin",
+  "repository": "https://github.com/With-Exo-AI/exo-plugin",
+  "license": "MIT",
+  "keywords": ["exo", "memory", "knowledge-graph", "identity", "codex"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Exo",
+    "shortDescription": "Your cross-session memory and cognition layer in Codex.",
+    "longDescription": "Connect Codex to Exo's hosted personal knowledge graph for identity-aware recall, decisions, capture, and ingestion across sessions.",
+    "developerName": "Exo AI",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write", "Interactive"],
+    "websiteURL": "https://github.com/With-Exo-AI/exo-plugin",
+    "brandColor": "#5B69F8",
+    "defaultPrompt": [
+      "Recall what I decided about this project.",
+      "Brief me from my Exo memory before we start.",
+      "Capture the decision we just made."
+    ]
+  }
+}

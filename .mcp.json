@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "exo": {
+      "url": "https://exo-api.proudplant-cb7660a6.westus2.azurecontainerapps.io/mcp/",
+      "bearer_token_env_var": "EXO_API_KEY"
+    }
+  }
+}

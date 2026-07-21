@@ -1,67 +1,77 @@
-# Exo plugin for Claude Code
+# Exo plugin for Claude Code and Codex
 
-Connect Claude Code to your hosted Exo cognition layer — cross-session memory,
-identity-conditioned context, capture, and named flows — as an installable
-plugin. The plugin bundles the hosted Exo MCP server (Streamable HTTP) and
-prompts you for your connection key, so there's no shell command to copy.
+Exo is a cross-session cognition layer: hosted MCP tools for personal-history recall,
+identity-conditioned context, decisions, capture, and ingestion, plus an agent skill that
+teaches Claude Code and Codex when to use them.
 
-## Install
+This repository intentionally contains two client manifests around the same shared skill:
 
-```bash
+- `.claude-plugin/plugin.json` configures Claude Code with its user-prompted connection key.
+- `.codex-plugin/plugin.json` and `.mcp.json` configure Codex with `EXO_API_KEY`.
+
+The plugin owns MCP registration and agent guidance. The separate `exo-setup` app owns
+local transcript discovery, selection, redaction, cold-start import, and continuous sync.
+That boundary matters: a hosted plugin cannot read `~/.claude/projects` or
+`~/.codex/sessions` from the user's computer.
+
+## Claude Code install
+
+Run inside Claude Code:
+
+```text
 /plugin marketplace add With-Exo-AI/exo-plugin
 /plugin install exo@exo
 ```
 
-You'll be prompted for your **Exo connection key** (`exo_prod_…`). Generate one in
-the Exo dashboard → **Import → Connect Claude Code**, then
-restart Claude Code.
+Claude Code prompts for the Exo connection key and backend URL declared in
+`.claude-plugin/plugin.json`.
 
-> The plugin **supplements** `claude mcp add exo …`; it does not replace it. They
-> don't hard-collide — a plugin's MCP server is namespaced (`plugin:exo:exo`), so it
-> coexists with a standalone `exo`. But running both gives you **two copies of every
-> Exo tool** (`mcp__exo__*` and `mcp__plugin_exo_exo__*`), so use **one**. To switch,
-> remove the other first (`claude mcp remove exo`).
+## Codex install
 
-## What you get
+Save a freshly generated Exo connection key in the environment, then run:
 
-- The hosted Exo MCP server (`exo_context`, `exo_capture`, `exo_ingest`, …),
-  registered over Streamable HTTP with your key.
-- `/exo-research <topic>` — a deep cross-session briefing on what you already
-  know/decided about a topic.
-- `/exo-setup` — check the connection + knowledge-graph status and fix common
-  issues.
-- The `using-exo` skill — the full reference for which Exo tool/mode to reach for.
+```bash
+export EXO_API_KEY=exo_prod_...
+codex plugin marketplace add With-Exo-AI/exo-plugin
+codex plugin add exo@exo
+```
 
-## Build notes
+On Windows PowerShell, persist the key with:
 
-Confirmed against the Claude Code plugin reference + real installed plugins
-(2026-06-12):
+```powershell
+setx EXO_API_KEY "exo_prod_..."
+```
 
-- **`userConfig`** entries use **`sensitive: true`** (masks input, stores in
-  secure storage) — *not* `secret`. **`title`** is a required per-field key.
-  `type`, `description`, `required`, `default` are as documented.
-- **`${user_config.<name>}`** interpolation is valid inside `mcpServers[*].url`
-  and `headers` (and hook/monitor commands).
-- **Inline `mcpServers`** in `plugin.json` is supported; an HTTP-transport server
-  entry is `{"type":"http","url":…,"headers":{…}}` (verified against the shipped
-  `linear` plugin's `type:"http"` server).
-- **`marketplace.json`** `source: "./"` points at a plugin whose manifest lives at
-  `./.claude-plugin/plugin.json` (verified against the shipped `ui-ux-pro-max`
-  marketplace). Required top-level keys: `name`, `owner.name`, `plugins[]`.
-- **`backend_url`** default is kept in sync with `paths.py::DEFAULT_BASE_URL`.
+Open a new terminal after `setx`. Restart Codex after installing. The plugin registers the
+hosted Exo MCP from `.mcp.json` and exposes the shared `using-exo` skill. Run `/mcp` in
+Codex to confirm Exo is available.
 
-## Local verification
+Standalone `codex mcp add` remains a compatibility fallback for older Codex builds; the
+plugin path is recommended because it packages MCP registration and Exo usage guidance
+together.
 
-Verified by a local-disk install (2026-06-12, Claude Code v2.1.x):
+## Import and continuous sync
 
-1. `/plugin marketplace add C:\path\to\exo-plugin` then `/plugin install exo@exo`,
-   supplying a real `exo_prod_…` key at the prompt. ✅
-2. The `/exo-research`, `/exo-setup` commands and the `using-exo` skill appear
-   immediately; the `plugin:exo:exo` MCP server registers after a Claude Code
-   reload/restart (MCP servers load at startup, unlike commands/skills). ✅
-3. **Duplicate-name behavior (O6):** plugin MCP servers are namespaced
-   (`plugin:exo:exo`), so the plugin's server **coexists** with a standalone
-   `claude mcp add exo` — Claude Code does **not** error on the shared name and does
-   **not** silently drop one (confirmed: a reload reported both, alongside the same
-   pattern already live for `context7` + `plugin:context7:context7`). The only
-   downside of running both is duplicate tools — hence the "use one" guidance above.
+Download and open the single `exo-setup` app from the Exo dashboard. It lets the user pick
+Claude Code, Codex, or both, then select up to two workspaces total. The same confirmed
+selection controls cold-start history import and the one shared background sync daemon.
+Codex-only setup does not create or modify anything under `~/.claude`.
+
+## Included components
+
+- Hosted Exo MCP registration for both clients.
+- `skills/using-exo/SKILL.md`: full tool and retrieval-mode reference.
+- Claude Code `/exo-research` and `/exo-setup` commands.
+- Codex automatic command-skill migration for compatible command files.
+
+## Validation
+
+Validate the Codex manifest with the official plugin creator helper:
+
+```powershell
+python C:\Users\Aniket\.codex\skills\.system\plugin-creator\scripts\validate_plugin.py .
+```
+
+Then smoke-test a local marketplace without touching the real Codex profile by setting a
+temporary `CODEX_HOME`, adding this repository as the marketplace, and running
+`codex plugin add exo@exo`.
